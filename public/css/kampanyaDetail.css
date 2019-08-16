@@ -1,0 +1,14 @@
+.ekler input{
+    margin-bottom: 10px;
+}
+
+.linkcontainer button{
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.linkcontainer {
+    margin-top: 4px;
+    margin-bottom: 4px;
+
+}

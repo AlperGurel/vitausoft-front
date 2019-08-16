@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Kampanya</title>
+</head>
+<body>
+    <% include navbar.ejs %>
+    <h1>Kampanya</h1>
+    <div class="app">
+        <form action="" id="campaignForm">
+            <label for="firma">Firma</label>
+            <select name="firma" id="firma"></select>
+            <label for="type">Kampanya Türü</label>
+            <select name="type" id="type"></select>
+            <label for="startdate">Başlangıç Tarihi</label>
+            <input type="text" id="startdate" name="startdate">
+            <label for="startdate">Bitiş Tarihi</label>
+            <input type="text" id="enddate" name="enddate">
+            <label for="notes">Notlar</label>
+            <input type="text" name="notes" id="notes">
+            <label for="ekler">Ekler</label>
+            <input type="file" name="ekler" id="ekler">
+            <button>Kampanya Ekle</button>
+        </form>
+        <!-- <button>Kampanya Ekle</button> -->
+        <table>
+            <thead id="tablehead">
+                <tr>
+                    <th>
+                        Firma
+                    </th>
+                    <th>
+                        Kampanya Türü
+                    </th>
+                    <th>
+                        Başlangıç Tarihi
+                    </th>
+                    <th>
+                        Bitiş Tarihi
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tableData"></tbody>
+        </table>
+    </div>
+</body>
+<link rel="stylesheet" href="/js-datepicker/dist/datepicker.min.css">
+<script src="/js-datepicker/dist/datepicker.min.js"></script>
+<link rel="stylesheet" href="/css/kampanya.css">
+<script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+<script src="/vue/dist/vue.js"></script>
+<script src="/js/kampanya.js"></script>
+</html>

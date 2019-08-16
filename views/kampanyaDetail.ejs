@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Kampanya Detay</title>
+</head>
+<body>
+    <% include navbar.ejs %>
+    <p id="id"><%=id%></p>
+    <button>Kampanyayı Sil</button>
+    <form class="form-group" action="">
+        <div>
+            <label for="firma">Firma</label>
+            <select  class="form-control" name="firma" id="firma"></select>
+
+        </div>
+        <div>
+            <label for="type">Kampanya Türü</label>
+            <select  class="form-control" name="type" id="type"></select>
+            
+        </div>
+        <div>
+            <label for="startdate">Başlangıç Tarihi</label>
+            <input  class="form-control" type="text" id="startdate" name="startdate">
+        
+        </div>
+        <div>
+            <label for="startdate">Bitiş Tarihi</label>
+            <input  class="form-control" type="text" id="enddate" name="enddate">
+    
+        </div>
+        <div>
+            <label for="notes">Notlar</label>
+            <input  class="form-control" type="text" name="notes" id="notes">
+
+        </div>
+    </form>
+    <div class="ekler">
+        <h3>Ekler</h3>
+        <label for="appendfile">Dosya ekle</label>
+        <input type="file" name="appendfile" id="appendfile">
+        <button id="appendfile-bt">Dosya Ekle</button>
+        <div class="content">
+        </div>
+    </div>
+</body>
+<link rel="stylesheet" href="/js-datepicker/dist/datepicker.min.css">
+<script src="/js-datepicker/dist/datepicker.min.js"></script>
+<link rel="stylesheet" href="/css/kampanyaDetail.css">
+<script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+<script src="/vue/dist/vue.js"></script>
+<script src="/js/kampanyaDetail.js"></script>
+
+</html>
