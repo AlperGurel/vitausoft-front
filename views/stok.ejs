@@ -8,5 +8,42 @@
 <body>
     <% include navbar.ejs %>
     <h1>Stok</h1>
+    <div class="stock-form">
+        <form action="">
+            <label for="barcode-input">Barkod</label>
+            <input type="text" name="barcode-input" id="barcode-input">
+            <label for="stockcode-input">Stok Kodu</label>
+            <input type="text" name="stockcode-input" id="stockcode-input">
+            <label for="stock-amount">Adet</label>
+            <input type="number" name="stock-amount" id="stock-amount">
+            <input type="submit" id="submit-product">
+        </form>
+    </div>
+    <div class="stock-table">
+        <table>
+            <thead id="tablehead">
+                <tr>
+                    <th>
+                        Barkod
+                    </th>
+                    <th>
+                        Stok Kodu
+                    </th>
+                    <th>
+                        Miktar
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tableData">
+
+            </tbody>
+        </table>
+    </div>
 </body>
+<link rel="stylesheet" href="/js-datepicker/dist/datepicker.min.css">
+<script src="/js-datepicker/dist/datepicker.min.js"></script>
+<link rel="stylesheet" href="/css/kampanya.css">
+<script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+<script src="/js/stok.js"></script>
 </html>

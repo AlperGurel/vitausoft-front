@@ -1,0 +1,233 @@
+.container>.header {
+    background: #2E3740;
+    color: white;
+    padding-left: 5px;
+
+}
+
+.info-header {
+    background: #2E3740;
+    color: white;
+    padding-left: 5px;
+}
+
+.info-header span {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.info-header span:nth-child(2) {
+    margin-left: 25px;
+    font-weight: 400;
+    font-size: 19px;
+    color: #C4C4C4;
+}
+
+
+
+.orderNo {
+    cursor: pointer;
+}
+
+.info-header p {
+    margin-top: 0;
+    color: #C4C4C4;
+}
+
+.container>.header span {
+    color: #C4C4C4;
+    margin-top: 0px;
+}
+
+.container>.header h5 {
+    margin-bottom: 3px;
+
+}
+
+.custom-context {
+    display: none;
+    position: fixed;
+    background: #0f1419;
+    color: white;
+    left: 50%;
+    top: 50%;
+    border-radius: 2px;
+}
+
+.custom-context ul {
+    /* padding: 5px; */
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.custom-context li {
+    padding-left: 5px;
+    padding-right: 5px;
+
+    /* line-height: 0.6rem; */
+    cursor: pointer;
+}
+
+.custom-context li:hover {
+    background: #222e3a;
+}
+
+.container {
+    max-width: 1272px;
+}
+
+.select-container {
+    display: none;
+}
+
+.select-container-primary {
+    background: #242F39;
+    padding-bottom: 10px !important;
+}
+
+.select-container-primary {
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.select-container-primary h5 {
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.select-container-primary select {
+    height: 2.3rem;
+}
+
+
+#orderPreview {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+#orderPreview table {}
+
+#orderPreview table,
+th,
+td {
+    border: 1px solid white;
+}
+
+#orderPreview table tr:nth-child(1) {
+    color: #A9CF54;
+}
+
+/* #orderPreview table tr:nth-child(2) td:nth-child(1) {
+    background: black;
+} */
+
+#confirmChoice {
+    height: 2.3rem;
+}
+
+#orderPreview table tr {}
+
+.table-container {
+    padding: 10px;
+    background: #242F39;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.download-excel {
+    margin-top: 5px;
+}
+
+
+#orderPreview table tr td:nth-child(2) {
+    /* background: green; */
+}
+
+.green {
+    background: green;
+
+}
+
+.blue {
+    background: #4287f5;
+}
+
+.red {
+    background: #f54242;
+}
+
+.orange {
+    background: orange;
+
+}
+
+.hover {
+    background: rgba(0, 173, 23, 0.4);
+}
+
+.choose {
+    background: rgba(0, 173, 23, 1)
+}
+
+#secimToggle {
+    cursor: pointer;
+    display: none;
+    width: 100px;
+
+}
+
+
+
+#secimToggle:hover {
+    color: green;
+}
+
+.barcodeEntry table {
+    table-layout: fixed;
+}
+
+.barcodeEntry {
+    padding: 10px;
+    background: #242F39;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 0;
+
+}
+
+.barcodeEntry tr {
+    line-height: 0.6rem;
+}
+
+.barcodeEntry th {
+    border: 0;
+    text-align: center;
+}
+
+.barcodeEntry td {}
+
+[contenteditable="true"] {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.itemCountTable {
+    padding: 10px;
+    background: #242F39;
+    max-height: 400px;
+    overflow-y: auto;
+
+}
+
+.itemCountTable th {
+    border: 0;
+    text-align: center;
+}
+
+.barcodeTables {
+    display: none;
+}

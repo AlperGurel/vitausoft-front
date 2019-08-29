@@ -1,17 +1,13 @@
-
-let campaignData = [
-    {
+let campaignData = [{
         firm: "vivre",
         type: "halı",
         startDate: "2019-08-11T09:21:02.060Z",
         endDate: "2019-08-11T09:21:02.060Z",
         notes: "This is a beautiful test",
-        attachments: [
-            {
-                url: "5d30bf18681fb9001767cad4/test2.xlsx",
-                filename: "test2.xlsx"
-            }
-        ]
+        attachments: [{
+            url: "5d30bf18681fb9001767cad4/test2.xlsx",
+            filename: "test2.xlsx"
+        }]
     },
     {
         firm: "vivre",
@@ -19,12 +15,10 @@ let campaignData = [
         startDate: "2019-08-11T09:21:02.060Z",
         endDate: "2019-08-11T09:21:02.060Z",
         notes: "This is a beautiful test",
-        attachments: [
-            {
-                url: "5d30bf18681fb9001767cad4/test2.xlsx",
-                filename: "test2.xlsx"
-            }
-        ]
+        attachments: [{
+            url: "5d30bf18681fb9001767cad4/test2.xlsx",
+            filename: "test2.xlsx"
+        }]
     },
     {
         firm: "vivre",
@@ -32,12 +26,10 @@ let campaignData = [
         startDate: "2019-08-11T09:21:02.060Z",
         endDate: "2019-08-11T09:21:02.060Z",
         notes: "This is a beautiful test",
-        attachments: [
-            {
-                url: "5d30bf18681fb9001767cad4/test2.xlsx",
-                filename: "test2.xlsx"
-            }
-        ]
+        attachments: [{
+            url: "5d30bf18681fb9001767cad4/test2.xlsx",
+            filename: "test2.xlsx"
+        }]
     },
     {
         firm: "vivre",
@@ -45,12 +37,10 @@ let campaignData = [
         startDate: "2019-08-11T09:21:02.060Z",
         endDate: "2019-08-11T09:21:02.060Z",
         notes: "This is a beautiful test",
-        attachments: [
-            {
-                url: "5d30bf18681fb9001767cad4/test2.xlsx",
-                filename: "test2.xlsx"
-            }
-        ]
+        attachments: [{
+            url: "5d30bf18681fb9001767cad4/test2.xlsx",
+            filename: "test2.xlsx"
+        }]
     },
     {
         firm: "vivre",
@@ -58,12 +48,10 @@ let campaignData = [
         startDate: "2019-08-11T09:21:02.060Z",
         endDate: "2019-08-11T09:21:02.060Z",
         notes: "This is a beautiful test",
-        attachments: [
-            {
-                url: "5d30bf18681fb9001767cad4/test2.xlsx",
-                filename: "test2.xlsx"
-            }
-        ]
+        attachments: [{
+            url: "5d30bf18681fb9001767cad4/test2.xlsx",
+            filename: "test2.xlsx"
+        }]
     }
 ]
 
@@ -95,10 +83,15 @@ var firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-function loadTable(campaignData){
+function loadTable(campaignData) {
     let html = ""
     $("#tableData").html("");
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+    const dateOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }
     campaignData.forEach(element => {
         let startdate = new Date(element.startDate).toLocaleDateString("tr-TR", dateOptions);
         let enddate = new Date(element.endDate).toLocaleDateString("tr-TR", dateOptions);
@@ -106,9 +99,9 @@ function loadTable(campaignData){
     })
     $("#tableData").html(html)
 
-    $("tr").on("click", function(){      
-        console.log(campaignData[this.rowIndex -1]["_id"])
-        let url = "http://localhost:3001/kampanya/" + campaignData[this.rowIndex -1]["_id"];
+    $("tr").on("click", function () {
+        console.log(campaignData[this.rowIndex - 1]["_id"])
+        let url = "http://localhost:3001/kampanya/" + campaignData[this.rowIndex - 1]["_id"];
         window.location = url;
     })
 }
@@ -127,8 +120,8 @@ const picker2 = datepicker("#enddate", {
     }
 });
 
-function loadFirmaSelect(){
-    if(firmalar){
+function loadFirmaSelect() {
+    if (firmalar) {
         firmalar.forEach(element => {
             $("#firma").append(new Option(element.name, element.name))
         })
@@ -137,8 +130,8 @@ function loadFirmaSelect(){
     return false;
 }
 
-function loadTypeSelect(){
-    if(türler){
+function loadTypeSelect() {
+    if (türler) {
         türler.forEach(element => {
             $("#type").append(new Option(element, element))
         })
@@ -155,26 +148,26 @@ $("#campaignForm button").click((e) => {
     attachmentFileName = undefined;
 })
 
-let createFormJson = function(){
+let createFormJson = function () {
     let json = {
         tid: new Date().toJSON(),
         firm: $("#firma option:checked").val(),
         type: $("#type option:checked").val(),
         startDate: new Date(startdate),
         endDate: new Date(enddate),
-        notes: $("#notes").val(),    
+        notes: $("#notes").val(),
         attachments: [{
             url: "",
             filename: attachmentFileName
-        }]  
+        }]
     }
     console.log(attachmentFileName);
     //no validation for now
-    if(json.attachments[0].filename){
+    if (json.attachments[0].filename) {
         let storageurl = "/campaingAttachments/" + json.tid + "/" + json.attachments[0].filename;
         json["attachments"][0].url = storageurl;
         var storageRef = firebase.storage().ref(storageurl);
-        storageRef.put(attachmentFile).then(function(snapshot){
+        storageRef.put(attachmentFile).then(function (snapshot) {
             $.ajax({
                 type: "post",
                 url: "https://vitaus-erp.herokuapp.com/api/campaign",
@@ -182,14 +175,13 @@ let createFormJson = function(){
                     campaign: json
                 },
                 success: (result) => {
-                    console.log(result) 
+                    console.log(result)
                     campaignData.push(result);
                     loadTable(campaignData);
                 }
             })
-        });        
-    }
-    else{
+        });
+    } else {
         $.ajax({
             type: "post",
             url: "https://vitaus-erp.herokuapp.com/api/campaign",
@@ -205,7 +197,7 @@ let createFormJson = function(){
     }
 }
 
-$("#ekler").change(function(e){
+$("#ekler").change(function (e) {
     attachmentFileName = e.target.files[0].name;
     attachmentFile = e.target.files[0];
 })

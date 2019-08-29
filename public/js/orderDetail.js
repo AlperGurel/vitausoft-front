@@ -17,243 +17,211 @@ const picker3 = datepicker("#inputPaymentDate", {
     formatter: turkishDateFormatter
 });
 const fileButton = document.getElementById("fileButton");
-fileButton.addEventListener("change", function(e){
-    uploadFile(e);  
-
-})
-
-
-
-let objectId;
-
-var firebaseConfig = {
-    apiKey: "AIzaSyAxV0utovHRcYpMcj_txVOf9NZLxaq0Iwg",
-    authDomain: "vitaus-erp.firebaseapp.com",
-    databaseURL: "https://vitaus-erp.firebaseio.com",
-    projectId: "vitaus-erp",
-    storageBucket: "vitaus-erp.appspot.com",
-    messagingSenderId: "597901040392",
-    appId: "1:597901040392:web:b264a25fc443e416"
-};
-firebase.initializeApp(firebaseConfig);
-
-
-$(document).ready(() => {
-    addCurrencyOptions();
-    addOrderOptions();
-    getFirmOptions();
-    getSingleOrder();
-
-    
+fileButton.addEventListener("change", function (e) {
+    uploadFile(e);
 });
 
-function getSingleOrder(){
+let firmData = {};
+let stateData = {};
+let objectId;
+
+let today = new Date();
+let deadlineDate = new Date();
+let paymentDate = new Date();
+
+$(document).ready(() => {
+    getFirmData();
+    getStateData();
+    setFirmOptions();
+    setStateOptions();
+    getSingleOrder();
+});
+
+$("select").on("contentChanged", function () {
+    $(this).formSelect();
+});
+
+async function getSingleOrder() {
     let orderId = document.getElementById("orderId").textContent;
-    let url = "https://vitaus-erp.herokuapp.com/api/order/" + orderId;
-    $.ajax({
-        url: url,
-        success: (result) => {
-            objectId = result[0]._id;
-            
-            addOrderToView(result);
-            createFileView(result);
-        }
-    })
+    let doc = await db
+        .collection("orders")
+        .doc(orderId)
+        .get();
+    addOrderToView(doc.data());
+    createFileView(doc.data());
 }
 
-function createFileView(result){
-    result[0].files.forEach((file) => {
+function createFileView(result) {
+    let fileContainer = document.getElementById("fileNames");
+    fileContainer.innerHTML = ""
+    result.files.forEach(file => {
+        console.log(file)
         let p = document.createElement("p");
         let node = document.createTextNode(file.name);
         p.appendChild(node);
 
-        let fileContainer = document.getElementById("fileNames");
         let sref = firebase.storage();
-        prefURL = file.path;
+        prefURL = file.url;
         let pref = sref.ref(prefURL);
-        pref.getDownloadURL().then(function(url){
-            console.log(url);
-            p.innerHTML = '<a href=\"'+ url+ '\">'+ file.name + '</a>';
-
-        }).catch(function(error){
-            console.log(error);
-        })
+        pref
+            .getDownloadURL()
+            .then(function (url) {
+                console.log(url);
+                p.innerHTML = '<a href="' + url + '">' + file.name + "</a>";
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
         fileContainer.appendChild(p);
+    });
 
-    })
 }
 
-function uploadFile(e){
-    if(objectId){
+function uploadFile(e) {
+    let orderId = document.getElementById("orderId").textContent;
+    if (orderId) {
         //get the order id to use it as a url prefix
         //get the file
         var file = e.target.files[0];
-        let url = objectId + "/" + file.name;
+        let url = orderId + "/" + file.name;
         console.log(url);
         //make a storage url with filename and orderid
         var storageRef = firebase.storage().ref(url);
         //upload file
-        storageRef.put(file).then(function(snapshot){
-            data = {
-                fileurl: url,
-                filename: file.name,
-                orderid: objectId
+        storageRef.put(file).then(async function (snapshot) {
+
+            let files = [];
+            let tmp = await db.collection("orders").doc(orderId).get();
+            files = tmp.data().files;
+            newFile = {
+                url: url,
+                name: file.name
             }
-            $.ajax({
-                type: "POST",
-                url: "https://vitaus-erp.herokuapp.com/api/order/upload",
-                data: data,
-                success: (result) => {
-                    console.log(result);
-                    location.reload();
-                }
-            })
+            files.push(newFile)
+            let json = {
+                files
+            }
+            db.collection("orders").doc(orderId).update(json);
+            let doc = await db
+                .collection("orders")
+                .doc(orderId)
+                .get();
+            createFileView(doc.data());
+
         });
         //save the url in the order filepath
 
-
-    }
-    
-}
-
-function addOrderToView(result){
-    console.log(result[0]);
-    $("#firmSelect option").each(function(index) {
-        let x = $(this).val();
-        if(x === result[0].firm){
-            document.getElementById("firmSelect").selectedIndex = index;
-        }
-    })
-
-    $("#inputOrderCurrency option").each(function(index) {
-        let x = $(this).val();
-        if(x === result[0].currency){
-            document.getElementById("inputOrderCurrency").selectedIndex = index;
-        }
-    })
-    picker1.setDate(new Date(result[0].creationDate), true);
-    picker2.setDate(new Date(result[0].deadline), true);
-    picker3.setDate(new Date(result[0].paymentDate), true);
-    document.getElementById("orderId").value = result[0].no;
-    document.getElementById("orderSelect").selectedIndex = result[0].state;
-    document.getElementById("inputOrderPrice").value = result[0].price;
-    if(result[0].detail){
-        document.getElementById("orderNotes").value = result[0].detail;
     }
 }
 
-function enableSave(){
-    let saveButton = document.getElementById("saveNew");
-    saveButton.disabled = false;
+async function addOrderToView(result) {
+
+    console.log(result);
+    firma = await result.firm.get();
+    console.log(firma.data().name);
+    $("#firmSelect").val(firma.id);
+    $("#firmSelect").formSelect();
+    $("#orderNo").val(result.no)
+    $("#inputOrderCurrency").val(result.currency);
+    $("#inputOrderCurrency").formSelect();
+    $("#inputOrderPrice").val(result.price)
+    state = await result.state.get();
+    $("#orderSelect").val(state.id);
+    $("#orderSelect").formSelect();
+    picker1.setDate(new Date(result.creationDate.seconds * 1000));
+    today = new Date(result.creationDate.seconds * 1000)
+    picker2.setDate(new Date(result.deadline.seconds * 1000))
+    deadlineDate = new Date(result.deadline.seconds * 1000)
+    picker3.setDate(new Date(result.paymentDate.seconds * 1000))
+    paymentDate = new Date(result.paymentDate.seconds * 1000)
+    $("#orderNotes").val(result.detail);
+    $(".loading").fadeOut("slow");
 }
 
-function disableSave(){
-    let saveButton = document.getElementById("saveNew");
-    saveButton.disabled = true;
+function enableSave() {
+    $("#saveNew").removeClass("disabled");
 }
-function saveOrder(){
-    let companyElement = document.getElementById("firmSelect");
-    let companyName = companyElement.options[companyElement.selectedIndex].value;
-    let currencyElement = document.getElementById("inputOrderCurrency");
-    let currency = currencyElement.options[currencyElement.selectedIndex].value;
+
+function disableSave() {
+    $("#saveNew").addClass("disabled");
+
+}
+
+function saveOrder() {
     let orderId = document.getElementById("orderId").textContent;
-    let status = document.getElementById("orderSelect").selectedIndex;
-    let orderDate =new Date(document.getElementById("inputOrderDate").value);
-    let deadline = new Date(document.getElementById("inputDeadline").value);
-    let paymentDate = new Date(document.getElementById("inputPaymentDate").value);
-    let notes = document.getElementById("orderNotes").value;
-    let price = document.getElementById("inputOrderPrice").value;
-
-    order = {
-        id: objectId,
-        firm: companyName,
-        no: orderId,
-        creationDate: orderDate,
-        deadline: deadline,
-        state: status,
+    let obj = {
+        creationDate: today,
+        currency: $("#inputOrderCurrency").val(),
+        deadline: deadlineDate,
+        detail: $("#orderNotes").val(),
+        files: [],
+        firm: db.collection("firms").doc($("#firmSelect").val()),
+        no: $("#orderNo").val(),
         paymentDate: paymentDate,
-        detail: notes,
-        price: price,
-        currency: currency
+        price: parseInt($("#inputOrderPrice").val()),
+        state: db.collection("states").doc($("#orderSelect").val()),
     }
-    if(companyName && orderId && orderDate && deadline && paymentDate){
-         $.ajax({
-             type: "PUT",
-             url: "https://vitaus-erp.herokuapp.com/api/order",
-             data: order,
-             success: (result) => {
-                 disableSave();
-             }
-         })
-    }
+    console.log(obj)
+    disableSave();
+    db.collection("orders").doc(orderId).update(obj)
 }
 
 $("#editOrder").change(() => {
     enableSave();
 });
 
-function deleteOrder(){
+function deleteOrder() {
     let url = "https://vitaus-erp.herokuapp.com/api/order/" + orderId;
     $.ajax({
         type: "DELETE",
         url: url,
         data: {},
-        success: (result) => {
+        success: result => {
             // window.open("http://localhost:3001/order/");
             window.location.replace("http://localhost:3001/order/");
         }
-    })
-
+    });
 }
 
-function addOrderOptions(){
-    let orderSelector = document.getElementById("orderSelect");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/status",
-        success: (result) => {
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element));
-                opt.value = element;
-                orderSelector.appendChild(opt);
-            })
-        }
-    })
+async function getFirmData() {
+    let snapshot = await db.collection("firms").get();
+    snapshot.docs.forEach(doc => {
+        firmData[doc.id] = doc.data();
+    });
 }
 
-function getFirmOptions(){
-    let firmSelector = document.getElementById("firmSelect");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/firm",
-        data: {},
-        success: (result) => {
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element.name));
-                opt.value = element.name;
-                firmSelector.appendChild(opt);
-            })
-        }
-    })
+async function getStateData() {
+    let snapshot = await db.collection("states").get();
+    snapshot.docs.forEach(doc => {
+        stateData[doc.id] = doc.data();
+    });
 }
 
-function addCurrencyOptions(){
-    let currencySelector = document.getElementById("inputOrderCurrency");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/currency",
-        data: {},
-        success: (result) => {
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element));
-                opt.value = element;
-                currencySelector.appendChild(opt);
-            })
-        }
-    })
+function setFirmOptions() {
+    db.collection("firms")
+        .get()
+        .then(snapshot => {
+            snapshot.docs.forEach(doc => {
+                $("#firmSelect").append(new Option(doc.data().name, doc.id));
+                $("#firmSelect").trigger("contentChanged");
+            });
+        });
 }
 
+function setStateOptions() {
+    db.collection("states")
+        .get()
+        .then(snapshot => {
+            snapshot.docs.forEach(doc => {
+                $("#orderSelect").append(new Option(doc.data().name, doc.id));
+                $("#orderSelect").trigger("contentChanged");
+            });
+        });
+}
+
+$("#prepareOrderStartButton").click(function () {
+    //create a dropdown with files in it
+    let orderId = document.getElementById("orderId").textContent;
+    window.location.href = "http://localhost:3001/order/prepare/" + orderId;
+});

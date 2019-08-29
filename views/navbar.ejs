@@ -1,6 +1,10 @@
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"> -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <link rel="stylesheet" href="/css/main.css">
-
+<!-- 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
     <div class="navbar-header">
@@ -12,14 +16,36 @@
         <li><a href="http://localhost:3001/stok/">Stok</a></li>
     </ul>
     </div>
+</nav> -->
+<nav class="nav-wraper">
+    <div class="container">
+        <a href="#" class="brand-logo">Vitaus</a>
+        <a href="#" class="sidenav-trigger" data-target="mobile-links">
+            <i class="material-icons">menu</i>
+        </a>
+        <ul class="right hide-on-med-and-down">
+            <li><a href="http://localhost:3001/order/">Sipariş</a></li>
+            <li><a href="http://localhost:3001/kampanya/">Kampanya</a></li>
+            <li><a href="http://localhost:3001/stok/">Stok</a></li>
+        </ul>
+
+    </div>
 </nav>
-<script src="/jquery/dist/jquery.min.js"></script>
+<ul class="sidenav" id="mobile-links">
+    <li><a href="http://localhost:3001/order/">Sipariş</a></li>
+    <li><a href="http://localhost:3001/kampanya/">Kampanya</a></li>
+    <li><a href="http://localhost:3001/stok/">Stok</a></li>
+</ul>
+
 <script src="/js/utility.js"></script>
 <script>
     //DONT FORGET TO CHANGE THIS AFTER CHANGING NAVIGATION CONTENT
-    $(".nav li a").each(function(){
-        if(window.location.href == $(this).attr("href")){
-            $(this).parent().addClass("active");
+    $(".nav li a").each(function () {
+        if (window.location.href == $(this).attr("href")) {
+            $(this).parent().addClass("teal");
         }
+    })
+    $(document).ready(function () {
+        $(".sidenav").sidenav();
     })
 </script>

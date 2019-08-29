@@ -1,0 +1,145 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+
+    <title>Sipariş Hazırla</title>
+</head>
+<style>
+    .no-js #loader {
+        display: none;
+    }
+
+    .js #loader {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top: 0;
+    }
+
+    .loading {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background: url("831.gif") center no-repeat #1C242D;
+    }
+</style>
+
+<body>
+    <div class="loading"></div>
+    <div class="custom-context">
+        <ul>
+            <li id="delete-line">Delete Line</li>
+        </ul>
+    </div>
+    <% include navbar.ejs %>
+    <div class="container">
+        <div class="header">
+            <h5>Sipariş Hazırla</h5>
+            <div class="header-bottom row">
+                <span>Bu siparişin ekler kısmında bulunan dosyalardan birini seçerek sipariş
+                    oluşturmaya başlayabilirsin.
+                </span>
+                <span class="right">
+                    <span>Sipariş Id:</span>
+                    <span id="orderId"><%=orderId%></span>
+                </span>
+            </div>
+        </div>
+        <div class="info-header">
+            <div>
+                <span class="firmName"></span>
+                <span title="Siparişe git" class="orderNo"></span>
+            </div>
+            <div>
+                <p class="orderDate"></p>
+            </div>
+        </div>
+        <div class="select-container">
+            <div class="row">
+                <div class="select-container-primary col s2">
+                    <div class="header">
+                        <h5>Dosya</h5>
+                    </div>
+
+                    <select name="" id="fileSelector" class="browser-default">
+                        <option disabled selected value="">Dosya Seçiniz</option>
+                    </select>
+                </div>
+                <div class="select-container-primary col s3">
+                    <div class="header">
+                        <h5>Stok Kodu Sütunu</h5>
+                    </div>
+
+                    <select name="" id="columnSelector" class="browser-default">
+                        <option disabled selected value="">Sütun Seçiniz</option>
+                    </select>
+                </div>
+                <div class="select-container-primary col s2">
+                    <div class="header">
+                        <h5>Adet Sütunu</h5>
+                    </div>
+
+                    <select name="" id="amountSelector" class="browser-default">
+                        <option disabled selected value="">Sütun Seçiniz</option>
+                    </select>
+                </div>
+                <div class="select-container-primary col s2">
+                    <div class="header">
+                        <h5>Seçimi Onayla</h5>
+                    </div>
+                    <div id="confirmChoice" class="btn white black-text">Onay</div>
+
+                </div>
+            </div>
+        </div>
+        <!-- <i class="material-icons right" id="secimToggle">event_note</i> -->
+        <div id="secimToggle">
+            Göster/Gizle
+        </div>
+        <div class="table-container">
+            <div id="orderPreview"></div>
+
+        </div>
+        <div>
+            <% include barcode-table.ejs %>
+        </div>
+
+    </div>
+
+    <!-- <div>
+        <input id="products" type="file">
+    </div> -->
+</body>
+<script>
+    var config = {
+        apiKey: "AIzaSyD770U4Okas3u9sL9NAIDQFQ6MdPg7rgEk",
+        authDomain: "vitaus-erp-project.firebaseapp.com",
+        databaseURL: "https://vitaus-erp-project.firebaseio.com",
+        projectId: "vitaus-erp-project",
+        storageBucket: "vitaus-erp-project.appspot.com",
+        messagingSenderId: "1091329655138",
+        appId: "1:1091329655138:web:0e7e85e12ce158b1"
+    }
+    firebase.initializeApp(config);
+    const db = firebase.firestore();
+
+    $(document).ready(function () {
+        $("select").formSelect();
+        $('.tooltipped').tooltip();
+
+    })
+</script>
+<script src="/xlsx/dist/xlsx.full.min.js"></script>
+<script src="/js/prepareOrder.js"></script>
+<link rel="stylesheet" href="/css/prepareOrder.css">
+
+</html>

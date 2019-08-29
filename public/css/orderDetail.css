@@ -1,14 +1,14 @@
 body {
     padding-right: 40px;
     padding-left: 40px;
-    padding-top : 20px;
+    padding-top: 20px;
 }
 
-.form-control{
+.form-control {
     /* width: 50%; */
 }
 
-#saveNew{
+#saveNew {
     margin-top: 50px;
     margin-left: 40%;
 }
@@ -18,30 +18,30 @@ body {
     cursor: default;
 }
 
-#saveInfo{
+#saveInfo {
     padding-top: 15px;
 }
 
-#deleteOrderButton{
+#deleteOrderButton {
     margin-top: 50px;
     float: left;
 }
 
-#fileExplorerContainer{
-    float:left;
+#fileExplorerContainer {
+    float: left;
     margin-left: 20px;
 }
 
-#formContainer{
-   width: 50%;
-   float: left;
+#formContainer {
+    width: 50%;
+    float: left;
 }
 
-#clear{
-    clear:both;
+#clear {
+    clear: both;
 }
 
-#uploadedFile{
+#uploadedFile {
     display: none;
 }
 
@@ -61,7 +61,7 @@ body {
     width: 170px;
 }
 
-#area{
+#area {
     text-align: center;
     font-size: 32px;
     color: rgba(0, 0, 0, 0.36);
@@ -69,14 +69,22 @@ body {
     height: 170;
 }
 
-#area div{
-    padding-top: 144px;   
+#area div {
+    padding-top: 144px;
 }
 
-#demo{
+#demo {
     font-size: 0;
 }
 
-#demo > * {
+#demo>* {
     font-size: 1.15rem;
+}
+
+.prepareOrderContainer {
+    margin-top: 40px;
+}
+
+.footer {
+    height: 40px;
 }

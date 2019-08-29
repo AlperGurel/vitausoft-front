@@ -1,15 +1,36 @@
 const picker1 = datepicker("#inputOrderDate", {
-    formatter: turkishDateFormatter
+    formatter: turkishDateFormatter,
+    onSelect: (instance, date) => {
+        today = date;
+    }
 });
 const picker2 = datepicker("#inputDeadline", {
-    formatter: turkishDateFormatter
+    formatter: turkishDateFormatter,
+    onSelect: (instance, date) => {
+        deadlineDate = date;
+    }
 });
 const picker3 = datepicker("#inputPaymentDate", {
-    formatter: turkishDateFormatter
+    formatter: turkishDateFormatter,
+    onSelect: (instance, date) => {
+        paymentDate = date
+    }
 });
-let firmObjectList;
 
-Date.prototype.addDays = function(days){
+let today = new Date();
+let deadlineDate = new Date();
+let paymentDate = new Date();
+
+
+let firmData = {};
+let stateData = {};
+let deletePending;
+// let firmObjectList;
+// let gOrderDate;
+// let gDeadline;
+// let gPaymentDate;
+
+Date.prototype.addDays = function (days) {
     const date = new Date(this.valueOf());
     date.setDate(date.getDate() + days);
     return date;
@@ -17,218 +38,145 @@ Date.prototype.addDays = function(days){
 
 
 $(document).ready(() => {
-    let companySelector = document.getElementById("firmSelect");
-    companySelector.addEventListener("change", function(){
-        setDeadline(companySelector.options[this.selectedIndex].value);
-        setPaymentDate(companySelector.options[this.selectedIndex].value);
+    $("#firmSelect").change(function () {
+        console.log($(this).val());
+        let deadline = firmData[$(this).val()]["deadline"];
+        let payment = firmData[$(this).val()]["payment"];
+        deadlineDate = deadlineDate.addDays(deadline);
+        picker2.setDate(deadlineDate, true);
+        paymentDate = paymentDate.addDays(payment);
+        picker3.setDate(paymentDate, true);
+        picker1.setDate(today, true);
     })
 
+    // addOrderOptions();
+    // addCurrencyOptions();
+    getFirmData();
+    getStateData();
+    setFirmOptions();
+    setStateOptions();
+    //getOrders();
 
-    addOrderOptions();
-    addCurrencyOptions();
-    getFirmOptions();
-    getOrders();
+})
+
+function saveOrder() {
+
+}
+
+$("#saveNew").click(async (e) => {
+    let obj = {
+        creationDate: today,
+        currency: $("#inputOrderCurrency").val(),
+        deadline: deadlineDate,
+        detail: "",
+        files: [],
+        firm: db.collection("firms").doc($("#firmSelect").val()),
+        no: $("#inputOrderNumber").val(),
+        paymentDate: paymentDate,
+        price: parseInt($("#inputOrderPrice").val()),
+        state: db.collection("states").doc($("#orderSelect").val()),
+    }
+    console.log(obj)
+    db.collection("orders").add(obj)
 
 })
 
 
-function getDateFromForm(){
-    let companyElement = document.getElementById("firmSelect");
-    let companyId = companyElement.options[companyElement.selectedIndex].value;
-    let currencyElement = document.getElementById("inputOrderCurrency");
-    let currency = currencyElement.options[currencyElement.selectedIndex].value;
-    let orderNumber = document.getElementById("inputOrderNumber").value;
-    let statusIndex = document.getElementById("orderSelect").selectedIndex;
-    let orderPrice = document.getElementById("inputOrderPrice").value;
+// let companyAscending = 0;
+// let orderNumberAscending = 0;
+// let statusAscending = 0;
+// let orderDateAscending = 0;
+// let terminAscending = 0;
+// let paymentAscending = 0;
 
-    let orderDate = new Date(document.getElementById("inputOrderDate").value);
-    
-    let deadline = new Date(document.getElementById("inputDeadline").value);
-    let paymentDate = new Date(document.getElementById("inputPaymentDate").value);
-    
-    order = {
-        price: orderPrice,
-        firm: companyId,
-        no: orderNumber,
-        creationDate: orderDate,
-        deadline: deadline,
-        state: statusIndex,
-        paymentDate: paymentDate,
-        currency: currency,
-        detail: ""
-    }
-    if(companyId && orderNumber && orderDate && deadline && paymentDate){
-        $.ajax({
-            type: "POST",
-            url: "https://vitaus-erp.herokuapp.com/api/order",
-            data: order,
-            success: (result) => {
-                addOrderToView(result);
+// function sortByCompany(){
+//     if(orderData){
+//         companyAscending = !companyAscending;
+//         if(companyAscending){
+//             orderData.sort((a, b) => (a.firm > b.firm) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (b.firm > a.firm) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
-            }
-        })  
-    }
-   else{
-        
-    }     
-}
+// function sortByOrderNumber(){
+//     if(orderData){
+//         orderNumberAscending = !orderNumberAscending;
+//         if(orderNumberAscending){
+//             orderData.sort((a, b) => (a.no > b.no) ? 1: -1)
+//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (b.no > a.no) ? 1: -1)
+//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
-let orderData;
+// function sortByStatus(){
+//     if(orderData){
+//         statusAscending = !statusAscending;
+//         if(statusAscending){
+//             orderData.sort((a, b) => (a.state > b.state) ? 1: -1)
+//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (b.state > a.state) ? 1: -1)
+//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
-function getOrders(){
-    $.ajax({
-        url: "https://vitaus-erp.herokuapp.com/api/order", 
-        success: (result) => {
-            orderData = result;
-            if(result.length >= 1){
-                addOrderToView(orderData);
-            }          
-    }})
-}
-let companyAscending = 0;
-let orderNumberAscending = 0;
-let statusAscending = 0;
-let orderDateAscending = 0;
-let terminAscending = 0;
-let paymentAscending = 0;
+// function sortByOrderDate(){
+//     if(orderData){
+//         terminAscending = !terminAscending;
+//         if(terminAscending){
+//             orderData.sort((a, b) => (new Date(a.creationDate) > new Date(b.creationDate)) ? 1: -1)
+//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (new Date(b.creationDate) >  new Date(a.creationDate)) ? 1: -1)
+//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
-function sortByCompany(){
-    if(orderData){
-        companyAscending = !companyAscending;
-        if(companyAscending){
-            orderData.sort((a, b) => (a.firm > b.firm) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (b.firm > a.firm) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
+// function sortByTermin(){
+//     if(orderData){
+//         orderDateAscending = !orderDateAscending;
+//         if(orderDateAscending){
+//             orderData.sort((a, b) => (new Date(a.deadline) > new Date(b.deadline)) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (new Date(b.deadline) >  new Date(a.deadline   )) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
-function sortByOrderNumber(){
-    if(orderData){
-        orderNumberAscending = !orderNumberAscending;
-        if(orderNumberAscending){
-            orderData.sort((a, b) => (a.no > b.no) ? 1: -1)
-            //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (b.no > a.no) ? 1: -1)
-            //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
-
-function sortByStatus(){
-    if(orderData){
-        statusAscending = !statusAscending;
-        if(statusAscending){
-            orderData.sort((a, b) => (a.state > b.state) ? 1: -1)
-            //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (b.state > a.state) ? 1: -1)
-            //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
-
-function sortByOrderDate(){
-    if(orderData){
-        terminAscending = !terminAscending;
-        if(terminAscending){
-            orderData.sort((a, b) => (new Date(a.creationDate) > new Date(b.creationDate)) ? 1: -1)
-            //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (new Date(b.creationDate) >  new Date(a.creationDate)) ? 1: -1)
-            //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
-
-function sortByTermin(){
-    if(orderData){
-        orderDateAscending = !orderDateAscending;
-        if(orderDateAscending){
-            orderData.sort((a, b) => (new Date(a.deadline) > new Date(b.deadline)) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (new Date(b.deadline) >  new Date(a.deadline   )) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
-
-function sortByPaymentDate(){
-    if(orderData){
-        paymentAscending = !paymentAscending;
-        if(orderDateAscending){
-            orderData.sort((a, b) => (new Date(a.paymendDate) > new Date(b.paymendDate)) ? 1: -1)
-            //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-        }
-        else{
-            orderData.sort((a, b) => (new Date(b.paymendDate) >  new Date(a.paymendDate)) ? 1: -1)
-            //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-        }
-        addOrderToView(orderData)
-    }
-}
+// function sortByPaymentDate(){
+//     if(orderData){
+//         paymentAscending = !paymentAscending;
+//         if(orderDateAscending){
+//             orderData.sort((a, b) => (new Date(a.paymendDate) > new Date(b.paymendDate)) ? 1: -1)
+//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
+//         }
+//         else{
+//             orderData.sort((a, b) => (new Date(b.paymendDate) >  new Date(a.paymendDate)) ? 1: -1)
+//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
+//         }
+//         addOrderToView(orderData)
+//     }
+// }
 
 
-function addOrderToView(orders){
-    //clear table every time
-    $("tr").not("#tableHead").remove()
-    console.log(orders);
-    let table = document.getElementById("orders");
-    if(Array.isArray(orders)){
-      orders.forEach((element, index) => {
-        let row = table.insertRow(index+1);
-        $("tr").not("#tableHead").addClass("clickable-row");
-        let companyCell = row.insertCell(0);
-        let orderNumberCell = row.insertCell(1);
-        let statusCell = row.insertCell(2);
-        let orderDateCell = row.insertCell(3);
-        let deadline = row.insertCell(4);
-        let paymentDate = row.insertCell(5);
-        let state = document.getElementById("orderSelect").options[element.state].value;
-        companyCell.innerHTML = element.firm;
-        orderNumberCell.innerHTML = element.no;
-        statusCell.innerHTML = state;
-        orderDateCell.innerHTML = new Date(element.creationDate).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-        deadline.innerHTML = new Date(element.deadline).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-        paymentDate.innerHTML = new Date(element.paymentDate).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-
-    });  
-    }
-    else{
-        
-        let row = table.insertRow(1);
-        $("tr").not("#tableHead").addClass("clickable-row");
-        let companyCell = row.insertCell(0);    
-        let orderNumberCell = row.insertCell(1);
-        let statusCell = row.insertCell(2);
-        let orderDateCell = row.insertCell(3);
-        let deadline = row.insertCell(4);
-        let paymentDate = row.insertCell(5);
-        let state = document.getElementById("orderSelect").options[orders.state].value;
-        orderDateCell.innerHTML = new Date(element.creationDate).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-        deadline.innerHTML = new Date(element.deadline).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-        paymentDate.innerHTML = new Date(element.paymentDate).toLocaleDateString("tr-TR", {weekday: "long", year:"numeric", month:"long",day:"numeric"})
-    }
-    $(".clickable-row").click(function() {
-        let orderId = this.childNodes[1].textContent;
-        let url = "http://localhost:3001/order/" + orderId;
-        window.location = url;
-    });
-    
-}
-
-
-function clearCache(){
+function clearCache() {
     $("#firmSelect").val(null);
     $("#inputOrderNumber").val(null);
     $("#inputOrderDate").val(null);
@@ -237,94 +185,178 @@ function clearCache(){
 }
 
 
-function addOrderOptions(){
-    let orderSelector = document.getElementById("orderSelect");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/status",
-        data: {},
-        success: (result) => {  
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element));
-                opt.value = element;
-                orderSelector.appendChild(opt);
-            })
-        }
-    })
-}
+$("select").on("contentChanged", function () {
+    $(this).formSelect();
+})
 
-function addCurrencyOptions(){
-    let currencySelector = document.getElementById("inputOrderCurrency");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/currency",
-        data: {},
-        success: (result) => {
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element));
-                opt.value = element;
-                currencySelector.appendChild(opt);
-            })
-        }
-    })
-}
-
-function getFirmOptions(){
-    let firmSelector = document.getElementById("firmSelect");
-    $.ajax({
-        type: "GET",
-        url: "https://vitaus-erp.herokuapp.com/api/order/firm",
-        data: {},
-        success: (result) => {
-            firmObjectList = result;
-            result.forEach((element) => {
-                let opt = document.createElement("option");
-                opt.appendChild(document.createTextNode(element.name));
-                opt.value = element.name;
-                firmSelector.appendChild(opt);
-            })
-        }
-    })
-}
-
-function setCreationDate(){
-    picker1.setDate(new Date(), true);
-}
-
-function setDeadline(firmName){
-    if(firmObjectList){
-        let deadlinetime;
-        firmObjectList.forEach(element => {
-            if(firmName === element.name){
-                deadlinetime = element.deadline;
-            }
+function setFirmOptions() {
+    db.collection("firms").get().then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+            $("#firmSelect").append(new Option(doc.data().name, doc.id))
+            $("#firmSelect").trigger("contentChanged");
         })
-        if(deadlinetime){
-            const datetime = new Date();
+    })
+}
 
-            const setDeadline = datetime.addDays(deadlinetime);
-            picker2.setDate(new Date(setDeadline), true); 
-        }
-        
-    }
-
+function setStateOptions() {
+    db.collection("states").get().then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+            $("#orderSelect").append(new Option(doc.data().name, doc.id))
+            $("#orderSelect").trigger("contentChanged");
+        })
+    })
 }
 
 
-function setPaymentDate(firmName){
-    if(firmObjectList){
-        let paymenttime;
-        firmObjectList.forEach(element => {
-            if(firmName === element.name){
-                paymenttime = element.payment;
-            }
-        })
-        if(paymenttime){
-            const datetime = new Date();
-            const setPayment = datetime.addDays(paymenttime);
-            picker3.setDate(new Date(setPayment), true);
-        }
+const orderList = document.querySelector("#order-list");
+
+//create element and render order
+async function renderOrder(doc) {
+    let li = document.createElement("li");
+    li.setAttribute("data-id", doc.id)
+
+    let firma = document.createElement("div");
+    firma.classList.add("col", "flow-text", "white-text");
+    let firmaName = await doc.data().firm.get();
+    firma.textContent = firmaName.data().name
+
+    let no = document.createElement("div");
+    no.classList.add("col")
+    let nospan1 = document.createElement("span");
+    let nospan2 = document.createElement("span");
+    nospan2.classList.add("white-text")
+    nospan1.textContent = "Sipariş No:";
+    nospan2.textContent = doc.data().no;
+    no.appendChild(nospan1);
+    no.appendChild(nospan2);
+
+    let creationDate = document.createElement("div");
+    creationDate.classList.add("col");
+    let creationSpan1 = document.createElement("span");
+    let creationSpan2 = document.createElement("span");
+    creationSpan1.textContent = "Sipariş Tarihi:";
+    creationSpan2.classList.add("white-text");
+    creationSpan2.textContent = new Date(doc.data().creationDate.seconds * 1000).toLocaleDateString("tr-TR");
+    creationDate.appendChild(creationSpan1);
+    creationDate.appendChild(creationSpan2);
+
+    let deadline = document.createElement("div");
+    deadline.classList.add("col");
+    let deadlineSpan1 = document.createElement("span");
+    let deadlineSpan2 = document.createElement("span");
+    deadlineSpan1.textContent = "Termin Tarihi:";
+    deadlineSpan2.classList.add("white-text");
+    deadlineSpan2.textContent = new Date(doc.data().deadline.seconds * 1000).toLocaleDateString("tr-TR");
+    deadline.appendChild(deadlineSpan1);
+    deadline.appendChild(deadlineSpan2);
+
+    currency = doc.data().currency;
+
+    let price = document.createElement("div");
+    price.classList.add("col");
+    let priceSpan1 = document.createElement("span");
+    let priceSpan2 = document.createElement("span");
+    priceSpan1.textContent = "Sipariş Tutarı:";
+    priceSpan2.classList.add("white-text");
+    priceSpan2.textContent = currency + doc.data().price;
+    price.appendChild(priceSpan1);
+    price.appendChild(priceSpan2);
+
+    let paymentDate = document.createElement("div");
+    paymentDate.classList.add("col");
+    let paymentSpan1 = document.createElement("span");
+    let paymentSpan2 = document.createElement("span");
+    paymentSpan1.textContent = "Ödeme Tarihi:";
+    paymentSpan2.classList.add("white-text");
+    paymentSpan2.textContent = new Date(doc.data().paymentDate.seconds * 1000).toLocaleDateString("tr-TR");
+    paymentDate.appendChild(paymentSpan1);
+    paymentDate.appendChild(paymentSpan2);
+
+    let status = document.createElement("div");
+    status.classList.add("col");
+    let statusSpan1 = document.createElement("span");
+    let statusSpan2 = document.createElement("span");
+    s = await doc.data().state.get();
+    statusSpan1.textContent = "Sipariş Durumu:";
+    statusSpan2.classList.add("white-text");
+    statusSpan2.textContent = s.data().name;
+    statusSpan2.style.color = s.data().color;
+    status.appendChild(statusSpan1);
+    status.appendChild(statusSpan2);
+
+    let crossa = document.createElement("a");
+    crossa.setAttribute("href", "#delete");
+    crossa.classList.add("modal-trigger")
+
+    let cross = document.createElement("i");
+    cross.textContent = "delete";
+    cross.classList.add("material-icons", "right")
+    crossa.appendChild(cross)
+    crossa.addEventListener("click", function (e) {
+        deletePending = e.target.parentNode.parentNode.getAttribute("data-id");
+    })
+
+    li.appendChild(firma);
+    li.appendChild(no);
+    li.appendChild(creationDate)
+    li.appendChild(deadline);
+    li.appendChild(price)
+    li.appendChild(paymentDate)
+    li.appendChild(status)
+    li.appendChild(crossa);
+
+    li.classList.add("card-panel", "grey", "darken-4", "grey-text", "text-lighten-1", "row")
+    orderList.appendChild(li)
+
+    li.addEventListener("mouseover", function () {
+        li.classList.add("z-depth-3")
+    });
+    li.addEventListener("mouseout", function () {
+        li.classList.remove("z-depth-3")
+    })
+    li.addEventListener("click", function () {
+        let id = this.getAttribute("data-id");
+        window.location.href = "http://localhost:3001/order/single/" + id;
+    })
+    $(".loading").fadeOut("slow");
+
+}
+
+//delete
+$("#deleteConfirm").click(function () {
+    console.log(deletePending)
+    if (deletePending) {
+        db.collection("orders").doc(deletePending).delete();
     }
+    deletePending = undefined;
+})
+
+
+//real time
+db.collection("orders").onSnapshot(snapshot => {
+    let changes = snapshot.docChanges();
+    changes.forEach(change => {
+        if (change.type == "added") {
+            renderOrder(change.doc)
+        } else if (change.type == "removed") {
+            let li = orderList.querySelector('[data-id= ' + change.doc.id + ']')
+            orderList.removeChild(li)
+        }
+    })
+})
+
+
+async function getFirmData() {
+    let snapshot = await db.collection("firms").get();
+    snapshot.docs.forEach(doc => {
+        firmData[doc.id] = doc.data();
+    })
+
+}
+
+async function getStateData() {
+    let snapshot = await db.collection("states").get();
+    snapshot.docs.forEach(doc => {
+        stateData[doc.id] = doc.data();
+    })
 }

@@ -1,5 +1,19 @@
-body{
-    padding-right: 40px;
+body {
+    /* padding-right: 40px;
     padding-left: 40px;
     padding-top : 20px;
+    color: rgb(0, 0, 0);
+    background: rgba(58, 66, 86, 1.0);
+    font-family: Arial, Helvetica, sans-serif; */
+    background: #1C242D;
+    color: white;
+
+}
+
+a:hover {
+    text-decoration: none
+}
+
+.nav-wraper {
+    background: #242F39;
 }
