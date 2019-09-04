@@ -1,16 +1,5 @@
-body {
-    padding-right: 40px;
-    padding-left: 40px;
-    padding-top: 20px;
-}
-
 .form-control {
     /* width: 50%; */
-}
-
-#saveNew {
-    margin-top: 50px;
-    margin-left: 40%;
 }
 
 .btn.btn-primary[disabled] {
@@ -22,10 +11,7 @@ body {
     padding-top: 15px;
 }
 
-#deleteOrderButton {
-    margin-top: 50px;
-    float: left;
-}
+
 
 #fileExplorerContainer {
     float: left;
@@ -43,6 +29,16 @@ body {
 
 #uploadedFile {
     display: none;
+}
+
+#filenames p {
+    width: 300px;
+    overflow: hidden;
+    border-bottom: solid 1px #b3b1ab;
+}
+
+#filenames a {
+    cursor: pointer;
 }
 
 .block {
@@ -87,4 +83,14 @@ body {
 
 .footer {
     height: 40px;
+}
+
+#container {
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+a {
+    color: White;
 }

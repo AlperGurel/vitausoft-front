@@ -145,9 +145,9 @@ $("#columnSelector").change(function () {
     let index = $(this).val()
     index = parseInt(index);
     index += 1
-    $("#orderPreview table tr td:nth-child(" + index + ")").css("border", "4px solid orange")
+    $("#orderPreview table tr td:nth-child(" + index + ")").css("border", "3px solid #ffb9a8")
     if (last && last["selectedByStock"]) {
-        $("#orderPreview table tr td:nth-child(" + last["stockIndex"] + ")").css("border", " 1px solid white")
+        $("#orderPreview table tr td:nth-child(" + last["stockIndex"] + ")").css("border", " 1px solid grey")
     }
     last["stockIndex"] = index;
     last["selectedByStock"] = true;
@@ -159,9 +159,9 @@ $("#amountSelector").change(function () {
     let index = $(this).val()
     index = parseInt(index)
     index += 1
-    $("#orderPreview table tr td:nth-child(" + index + ")").css("border", "4px solid green")
+    $("#orderPreview table tr td:nth-child(" + index + ")").css("border", "3px solid #63a7ff")
     if (last && last["selectedByAmount"]) {
-        $("#orderPreview table tr td:nth-child(" + last["amountIndex"] + ")").css("border", "1px solid white")
+        $("#orderPreview table tr td:nth-child(" + last["amountIndex"] + ")").css("border", "1px solid grey")
 
     }
     last["amountIndex"] = index;

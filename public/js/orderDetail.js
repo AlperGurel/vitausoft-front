@@ -1,26 +1,40 @@
 const picker1 = datepicker("#inputOrderDate", {
     onSelect: (instance, date) => {
+        today = date;
         enableSave();
     },
-    formatter: turkishDateFormatter
+    formatter: turkishDateFormatter,
+    customDays: turkishDays,
+    customMonths: turkishMonths
 });
 const picker2 = datepicker("#inputDeadline", {
-    onSelect: (instance, data) => {
+    onSelect: (instance, date) => {
+        deadlineDate = date;
         enableSave();
     },
-    formatter: turkishDateFormatter
+    formatter: turkishDateFormatter,
+    customDays: turkishDays,
+    customMonths: turkishMonths
 });
 const picker3 = datepicker("#inputPaymentDate", {
-    onSelect: (instance, data) => {
+    onSelect: (instance, date) => {
+        paymentDate = date;
         enableSave();
     },
-    formatter: turkishDateFormatter
-});
-const fileButton = document.getElementById("fileButton");
-fileButton.addEventListener("change", function (e) {
-    uploadFile(e);
+    formatter: turkishDateFormatter,
+    customDays: turkishDays,
+    customMonths: turkishMonths
+
 });
 
+
+$("#file-select").change(function (e) {
+    $("#submit-file").removeClass("disabled")
+})
+$("#submit-file").click(function (e) {
+    console.log($("#file-select").prop("files")[0]);
+    uploadFile($("#file-select").prop("files")[0]);
+})
 let firmData = {};
 let stateData = {};
 let objectId;
@@ -67,7 +81,7 @@ function createFileView(result) {
             .getDownloadURL()
             .then(function (url) {
                 console.log(url);
-                p.innerHTML = '<a href="' + url + '">' + file.name + "</a>";
+                p.innerHTML = '<a class="filename" id="' + file.name.replace(/[()\s]/g, '') + '" href="' + url + '">' + file.name + "</a><a class='red-text' onclick='deleteFile(this)'><i class='material-icons right'>delete</i></a>";
             })
             .catch(function (error) {
                 console.log(error);
@@ -77,20 +91,62 @@ function createFileView(result) {
     });
 
 }
+let op = document.getElementById("orderId").textContent;
 
-function uploadFile(e) {
+function deleteFile(element) {
+    let orderId = document.getElementById("orderId").textContent;
+    let filename = $(element).parent().children(".filename").text();
+    $(element).parent().remove();
+    let path = orderId + "/" + filename;
+    let storageRef = firebase.storage().ref(path);
+    storageRef.delete().then(function () {
+
+    }).catch(function (error) {
+
+    })
+    //delete from object
+    db.collection("orders").doc(orderId).get().then(function (doc) {
+        let data = doc.data();
+        let newFiles = data.files.filter(element => {
+            return element.url != path;
+        })
+        data.files = newFiles;
+        db.collection("orders").doc(orderId).update(data).then(async function () {
+            // let doc = await db
+            //     .collection("orders")
+            //     .doc(orderId)
+            //     .get();
+            // createFileView(doc.data());
+        });
+
+
+    }).catch(function (error) {
+        console.log(error);
+    })
+    //redraw
+
+}
+
+function uploadFile(file) {
     let orderId = document.getElementById("orderId").textContent;
     if (orderId) {
         //get the order id to use it as a url prefix
         //get the file
-        var file = e.target.files[0];
         let url = orderId + "/" + file.name;
-        console.log(url);
+        $("#fileNames").append("<p><a class='filename' id='" + file.name.replace(/[()\s]/g, '') + "'>" + file.name + "</a><a class='red-text onclick='deleteFile(this)'><i class='material-icons right'>delete</i></a></p>")
         //make a storage url with filename and orderid
         var storageRef = firebase.storage().ref(url);
         //upload file
         storageRef.put(file).then(async function (snapshot) {
+            snapshot.ref.getDownloadURL().then(function (donwloadURL) {
 
+                console.log($("#" + file.name.replace(/[()\s]/g, '')));
+                let tmp = file.name.replace(/[()\s]/g, '')
+                $('#' + tmp).attr("href", donwloadURL);
+                $("#" + tmp).click(function (e) {
+                    console.log(e);
+                })
+            })
             let files = [];
             let tmp = await db.collection("orders").doc(orderId).get();
             files = tmp.data().files;
@@ -103,17 +159,18 @@ function uploadFile(e) {
                 files
             }
             db.collection("orders").doc(orderId).update(json);
-            let doc = await db
-                .collection("orders")
-                .doc(orderId)
-                .get();
-            createFileView(doc.data());
+            // let doc = await db
+            //     .collection("orders")
+            //     .doc(orderId)
+            //     .get();
+            // createFileView(doc.data());
 
         });
         //save the url in the order filepath
 
     }
 }
+
 
 async function addOrderToView(result) {
 
@@ -123,6 +180,7 @@ async function addOrderToView(result) {
     $("#firmSelect").val(firma.id);
     $("#firmSelect").formSelect();
     $("#orderNo").val(result.no)
+
     $("#inputOrderCurrency").val(result.currency);
     $("#inputOrderCurrency").formSelect();
     $("#inputOrderPrice").val(result.price)
@@ -171,17 +229,30 @@ $("#editOrder").change(() => {
     enableSave();
 });
 
-function deleteOrder() {
-    let url = "https://vitaus-erp.herokuapp.com/api/order/" + orderId;
-    $.ajax({
-        type: "DELETE",
-        url: url,
-        data: {},
-        success: result => {
-            // window.open("http://localhost:3001/order/");
-            window.location.replace("http://localhost:3001/order/");
-        }
+async function deleteOrder() {
+    let orderId = document.getElementById("orderId").textContent;
+    //delete files
+    //delete prepare order data
+    let filepathArray = await db.collection("orders").doc(orderId).get();
+    filepathArray = filepathArray.data();
+    filepathArray = filepathArray["files"];
+    filepathArray.forEach(element => {
+        let storageRef = firebase.storage().ref(element.url);
+        storageRef.delete().then(function () {
+
+        }).catch(function (error) {
+
+        })
+    })
+    db.collection("orderData").doc(orderId).delete().then(function () {
+
+    }).catch(function (error) {
+        console.log("There is no such document")
     });
+    db.collection("orders").doc(orderId).delete().then(function () {
+        window.location.href = "http://localhost:3001/order/"
+    });
+    console.log(filepathArray);
 }
 
 async function getFirmData() {

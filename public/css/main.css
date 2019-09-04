@@ -5,8 +5,11 @@ body {
     color: rgb(0, 0, 0);
     background: rgba(58, 66, 86, 1.0);
     font-family: Arial, Helvetica, sans-serif; */
-    background: #1C242D;
-    color: white;
+    /* background: #f4f2ec; */
+    background: #e8e8e8;
+    /* background: linear-gradient(45deg, #26547c 0%, #06d6a0 100%); */
+    color: #575a60;
+    overflow-x: hidden;
 
 }
 
@@ -15,5 +18,18 @@ a:hover {
 }
 
 .nav-wraper {
-    background: #242F39;
+    background: #151515;
+    z-index: 122;
+}
+
+nav ul a {
+    color: #575a60;
+}
+
+nav,
+nav .nav-wrapper i,
+nav a.sidenav-trigger,
+nav a.sidenav-trigger i {
+    height: 35px !important;
+    line-height: 35px !important;
 }

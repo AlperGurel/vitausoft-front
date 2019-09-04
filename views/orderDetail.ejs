@@ -29,7 +29,7 @@
         width: 100%;
         height: 100%;
         z-index: 9999;
-        background: url("Gear-2.4s-200px.gif") center no-repeat #1C242D;
+        background: url("Gear-2.4s-200px.gif") center no-repeat #f4f2ec;
     }
 </style>
 
@@ -39,20 +39,22 @@
     <div id="container">
         <form autocomplete="off" id="editOrder" action="">
             <div class="row">
-                <p id="orderId"><%=orderId%></p>
-                <div class="input-field col s12 l5">
+                <p id="orderId" style="display: none"><%=orderId%></p>
+                <div class="input-field col l12">
                     <select name="" id="firmSelect"></select>
                     <label for="Firma">Firma</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Sipariş No</span>
                     <input type="text" id="orderNo">
-                    <label for="">Sipariş No</label>
+                    <!-- <label for="">Sipariş No</label> -->
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Tutar</span>
                     <input type="number" id="inputOrderPrice">
-                    <label for="">Tutar</label>
+
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
                     <select name="" id="inputOrderCurrency">
                         <option value="$">Dolar</option>
                         <option value="€">Euro</option>
@@ -60,74 +62,93 @@
                     </select>
                     <label for="">Döviz</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
                     <select class="" id="orderSelect">
 
                     </select>
                     <label for="">Sipariş Durumu</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Siparişin Alındığı Tarih</span>
                     <input type="text" class="" id="inputOrderDate">
-                    <label for="">Siparişin Alındığı Tarih</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Termin Tarihi</span>
                     <input type="text" class="" id="inputDeadline">
-                    <label for="">Termin Tarihi</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Ödeme Tarihi</span>
                     <input type="text" class="" id="inputPaymentDate">
-                    <label for="">Ödeme Tarihi</label>
                 </div>
-                <div class="input-field col s12 l5">
+                <div class="input-field col l12">
+                    <span>Notlar</span>
                     <textarea class="" id="orderNotes" rows="5"></textarea>
-                    <label for="">Notlar:</label>
                 </div>
+                <!-- 
+                <div class="input-field col l12">
+                    <div class="row">
+                        <div class="col l6">
+                            <a href="" class="btn disabled" id="saveNew" onclick="saveOrder()">kaydet</a>
+                        </div>
+                        <div class="col l6">
+                            <a id="add-order-button" data-toggle="modal" href="#delete"
+                                class="btn red modal-trigger">SİPARİŞİ
+                                SİL</a>
 
-                <div class="input-field col s12 l5">
-                    <p id="fillWarning"></p>
-                    <button type="button" class="btn disabled" id="saveNew" onclick="saveOrder()">Kaydet</button>
-                    <button type="button" class="btn red" data-toggle="modal" data-target="#deleteOrderModal"
-                        id="deleteOrderButton" onclick="">Siparişi Sil</button>
+                        </div>
 
+                    </div>
+
+                </div> -->
+                <div class="col l6">
+                    <div class="row">
+                        <div class="col l6">
+                            <div class="btn disabled" id="saveNew" onclick="saveOrder()">kaydet</div>
+                        </div>
+                        <div class="col l6">
+                            <div class="btn red "><a class="modal-trigger" data-toggle="modal" href="#delete"
+                                    style="color:white">SİPARİŞİ
+                                    SİL</a></div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
         </form>
-        <div class="modal fade" id="deleteOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Uyarı</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Bu sipariş ve içindeki tüm dosyalar silinecek. Bu işlemi onaylıyor musunuz?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" onclick="deleteOrder()">Sil</button>
-                    </div>
-                </div>
+        <div class="modal" id="delete">
+            <div class="modal-content">
+                <p>Sipariş silme işlemini onaylıyor musunuz?</p>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-close btn grey">Hayır</a>
+                <a href="#" onclick="deleteOrder()" id="deleteConfirm" class=" modal-close btn red">Evet</a>
             </div>
         </div>
+        <div id="fileExplorerContainer container">
+            <p>Dosyalar</p>
+            <form action="#">
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>Dosya Seç</span>
+                        <input id="file-select" type="file">
+                    </div>
+                    <div class="file-path-wrapper col l5">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+                <div class="btn green disabled" id="submit-file">Gönder</div>
+            </form>
+            <div id="fileNames"></div>
+        </div>
 
-    </div>
-    <div id="fileExplorerContainer container">
-        <p>Dosyalar</p>
-        <input type="file" value="upload" id="fileButton">
-        <div id="fileNames"></div>
+        <div id="clear"></div>
+        <div class="prepareOrderContainer">
+            <div class="btn" id="prepareOrderStartButton">SİPARİŞ HAZIRLA</div>
+        </div>
+        <div class="footer">
 
-    </div>
-
-    <div id="clear"></div>
-    <div class="prepareOrderContainer">
-        <div class="btn" id="prepareOrderStartButton">Sipariş Hazırla</div>
-    </div>
-    <div class="footer">
+        </div>
 
     </div>
     <script src="/js-datepicker/dist/datepicker.min.js"></script>
@@ -148,6 +169,7 @@
 
         $(document).ready(function () {
             $("select").formSelect();
+            $(".modal").modal();
         })
     </script>
     <script src="/js/orderDetail.js"></script>

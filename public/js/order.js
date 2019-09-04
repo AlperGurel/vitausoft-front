@@ -2,19 +2,25 @@ const picker1 = datepicker("#inputOrderDate", {
     formatter: turkishDateFormatter,
     onSelect: (instance, date) => {
         today = date;
-    }
+    },
+    customDays: turkishDays,
+    customMonths: turkishMonths
 });
 const picker2 = datepicker("#inputDeadline", {
     formatter: turkishDateFormatter,
     onSelect: (instance, date) => {
         deadlineDate = date;
-    }
+    },
+    customDays: turkishDays,
+    customMonths: turkishMonths
 });
 const picker3 = datepicker("#inputPaymentDate", {
     formatter: turkishDateFormatter,
     onSelect: (instance, date) => {
         paymentDate = date
-    }
+    },
+    customDays: turkishDays,
+    customMonths: turkishMonths
 });
 
 let today = new Date();
@@ -41,12 +47,16 @@ $(document).ready(() => {
     $("#firmSelect").change(function () {
         console.log($(this).val());
         let deadline = firmData[$(this).val()]["deadline"];
+
         let payment = firmData[$(this).val()]["payment"];
         deadlineDate = deadlineDate.addDays(deadline);
         picker2.setDate(deadlineDate, true);
         paymentDate = paymentDate.addDays(payment);
         picker3.setDate(paymentDate, true);
         picker1.setDate(today, true);
+        M.textareaAutoResize($('#inputOrderDate'));
+        M.textareaAutoResize($('#inputDeadline'));
+        M.textareaAutoResize($('#inputPaymentDate'));
     })
 
     // addOrderOptions();
@@ -80,101 +90,6 @@ $("#saveNew").click(async (e) => {
     db.collection("orders").add(obj)
 
 })
-
-
-// let companyAscending = 0;
-// let orderNumberAscending = 0;
-// let statusAscending = 0;
-// let orderDateAscending = 0;
-// let terminAscending = 0;
-// let paymentAscending = 0;
-
-// function sortByCompany(){
-//     if(orderData){
-//         companyAscending = !companyAscending;
-//         if(companyAscending){
-//             orderData.sort((a, b) => (a.firm > b.firm) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (b.firm > a.firm) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
-// function sortByOrderNumber(){
-//     if(orderData){
-//         orderNumberAscending = !orderNumberAscending;
-//         if(orderNumberAscending){
-//             orderData.sort((a, b) => (a.no > b.no) ? 1: -1)
-//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (b.no > a.no) ? 1: -1)
-//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
-// function sortByStatus(){
-//     if(orderData){
-//         statusAscending = !statusAscending;
-//         if(statusAscending){
-//             orderData.sort((a, b) => (a.state > b.state) ? 1: -1)
-//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (b.state > a.state) ? 1: -1)
-//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
-// function sortByOrderDate(){
-//     if(orderData){
-//         terminAscending = !terminAscending;
-//         if(terminAscending){
-//             orderData.sort((a, b) => (new Date(a.creationDate) > new Date(b.creationDate)) ? 1: -1)
-//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (new Date(b.creationDate) >  new Date(a.creationDate)) ? 1: -1)
-//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
-// function sortByTermin(){
-//     if(orderData){
-//         orderDateAscending = !orderDateAscending;
-//         if(orderDateAscending){
-//             orderData.sort((a, b) => (new Date(a.deadline) > new Date(b.deadline)) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (new Date(b.deadline) >  new Date(a.deadline   )) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
-// function sortByPaymentDate(){
-//     if(orderData){
-//         paymentAscending = !paymentAscending;
-//         if(orderDateAscending){
-//             orderData.sort((a, b) => (new Date(a.paymendDate) > new Date(b.paymendDate)) ? 1: -1)
-//             //orderData.sort((a, b) => (a.no.localeCompare(b.no)) ? 1: -1)
-//         }
-//         else{
-//             orderData.sort((a, b) => (new Date(b.paymendDate) >  new Date(a.paymendDate)) ? 1: -1)
-//             //orderData.sort((a, b) => (b.no.localeCompare(a.no)) ? 1: -1)
-//         }
-//         addOrderToView(orderData)
-//     }
-// }
-
 
 function clearCache() {
     $("#firmSelect").val(null);
@@ -216,7 +131,7 @@ async function renderOrder(doc) {
     li.setAttribute("data-id", doc.id)
 
     let firma = document.createElement("div");
-    firma.classList.add("col", "flow-text", "white-text");
+    firma.classList.add("col", "flow-text", "grey-text");
     let firmaName = await doc.data().firm.get();
     firma.textContent = firmaName.data().name
 
@@ -224,7 +139,7 @@ async function renderOrder(doc) {
     no.classList.add("col")
     let nospan1 = document.createElement("span");
     let nospan2 = document.createElement("span");
-    nospan2.classList.add("white-text")
+    nospan2.classList.add("grey-text")
     nospan1.textContent = "Sipariş No:";
     nospan2.textContent = doc.data().no;
     no.appendChild(nospan1);
@@ -235,7 +150,7 @@ async function renderOrder(doc) {
     let creationSpan1 = document.createElement("span");
     let creationSpan2 = document.createElement("span");
     creationSpan1.textContent = "Sipariş Tarihi:";
-    creationSpan2.classList.add("white-text");
+    creationSpan2.classList.add("grey-text");
     creationSpan2.textContent = new Date(doc.data().creationDate.seconds * 1000).toLocaleDateString("tr-TR");
     creationDate.appendChild(creationSpan1);
     creationDate.appendChild(creationSpan2);
@@ -245,7 +160,7 @@ async function renderOrder(doc) {
     let deadlineSpan1 = document.createElement("span");
     let deadlineSpan2 = document.createElement("span");
     deadlineSpan1.textContent = "Termin Tarihi:";
-    deadlineSpan2.classList.add("white-text");
+    deadlineSpan2.classList.add("grey-text");
     deadlineSpan2.textContent = new Date(doc.data().deadline.seconds * 1000).toLocaleDateString("tr-TR");
     deadline.appendChild(deadlineSpan1);
     deadline.appendChild(deadlineSpan2);
@@ -257,7 +172,7 @@ async function renderOrder(doc) {
     let priceSpan1 = document.createElement("span");
     let priceSpan2 = document.createElement("span");
     priceSpan1.textContent = "Sipariş Tutarı:";
-    priceSpan2.classList.add("white-text");
+    priceSpan2.classList.add("grey-text");
     priceSpan2.textContent = currency + doc.data().price;
     price.appendChild(priceSpan1);
     price.appendChild(priceSpan2);
@@ -267,7 +182,7 @@ async function renderOrder(doc) {
     let paymentSpan1 = document.createElement("span");
     let paymentSpan2 = document.createElement("span");
     paymentSpan1.textContent = "Ödeme Tarihi:";
-    paymentSpan2.classList.add("white-text");
+    paymentSpan2.classList.add("grey-text");
     paymentSpan2.textContent = new Date(doc.data().paymentDate.seconds * 1000).toLocaleDateString("tr-TR");
     paymentDate.appendChild(paymentSpan1);
     paymentDate.appendChild(paymentSpan2);
@@ -278,7 +193,7 @@ async function renderOrder(doc) {
     let statusSpan2 = document.createElement("span");
     s = await doc.data().state.get();
     statusSpan1.textContent = "Sipariş Durumu:";
-    statusSpan2.classList.add("white-text");
+    statusSpan2.classList.add("grey-text");
     statusSpan2.textContent = s.data().name;
     statusSpan2.style.color = s.data().color;
     status.appendChild(statusSpan1);
@@ -303,20 +218,21 @@ async function renderOrder(doc) {
     li.appendChild(price)
     li.appendChild(paymentDate)
     li.appendChild(status)
-    li.appendChild(crossa);
+    // li.appendChild(crossa);
 
-    li.classList.add("card-panel", "grey", "darken-4", "grey-text", "text-lighten-1", "row")
+    li.classList.add("card-panel", "row", "card-customize")
     orderList.appendChild(li)
 
     li.addEventListener("mouseover", function () {
-        li.classList.add("z-depth-3")
+        li.classList.add("list-background")
     });
     li.addEventListener("mouseout", function () {
-        li.classList.remove("z-depth-3")
+        li.classList.remove("list-background")
     })
     li.addEventListener("click", function () {
         let id = this.getAttribute("data-id");
-        window.location.href = "http://localhost:3001/order/single/" + id;
+        // window.location.href = "http://localhost:3001/order/single/" + id;
+        window.location.href = home_ip + "/order/single/" + id;
     })
     $(".loading").fadeOut("slow");
 
